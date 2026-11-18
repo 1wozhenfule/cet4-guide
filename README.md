@@ -3,7 +3,7 @@
 > 一本 92 页的四级备考手册：7 个部分、84 张表、430+ 组带中文注释的同义替换。
 > 技巧在前，素材在后；网页、PDF、Word 三种形态同源。
 
-**在线阅读**：部署后请把地址填在这里（`https://<你的用户名>.github.io/<仓库名>/`）
+**在线阅读**：https://1wozhenfule.github.io/cet4-guide/
 **直接下载**：[PDF](assets/cet4-guide.pdf) · [Word](assets/cet4-guide.docx)
 
 ![首页预览](assets/preview.png)

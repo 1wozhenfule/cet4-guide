@@ -29,9 +29,10 @@ function Write-Utf8NoBom($path, $text) {
 }
 
 # README 里的在线地址占位符
-$readme = [System.IO.File]::ReadAllText((Join-Path $PSScriptRoot "README.md"))
+$readmePath = Join-Path $PSScriptRoot "README.md"
+$readme = [System.IO.File]::ReadAllText($readmePath)
 $readme = $readme.Replace("{{PAGES_URL}}", $pagesUrl)
-Write-Utf8NoBom (Join-Path $PSScriptRoot "README.md") $readme
+Write-Utf8NoBom $readmePath $readme
 
 # 每个页面侧栏的 GitHub 链接
 Get-ChildItem -Path $PSScriptRoot -Filter *.html | ForEach-Object {
@@ -45,13 +46,25 @@ if ($DryRun) {
     exit 0
 }
 
-git remote remove origin 2>$null
+$ErrorActionPreference = "Continue"
+
+$remotes = @(git remote 2>$null)
+if ($remotes -contains "origin") { git remote remove origin 2>$null }
 git remote add origin $RepoUrl
+if ($LASTEXITCODE -ne 0) { throw "添加远程仓库失败" }
+
 git add -A
-git commit -m "chore: 填入在线地址与仓库链接" --quiet
-if ($LASTEXITCODE -ne 0) { Write-Host "没有需要提交的改动，继续推送" }
+git diff --cached --quiet 2>$null
+if ($LASTEXITCODE -ne 0) {
+    git commit -m "chore: 填入在线地址与仓库链接" 2>$null | Out-Null
+}
 
 git push -u origin main
+if ($LASTEXITCODE -ne 0) {
+    Write-Host ""
+    Write-Host "推送失败：请确认已登录 GitHub，或在弹出的窗口里完成登录后重试。" -ForegroundColor Red
+    exit 1
+}
 
 Write-Host ""
 Write-Host "推送成功。最后一步（网页上点两下）：" -ForegroundColor Green
